@@ -1,10 +1,10 @@
 # `indieauth_discovery`
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/craftyphotons/indiauth_discovery/Verify/main?style=for-the-badge)](https://github.com/craftyphotons/indiauth_discovery/actions?query=workflow%3AVerify)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/craftyphotons/indieauth_discovery/Verify/main?style=for-the-badge)](https://github.com/craftyphotons/indieauth_discovery/actions?query=workflow%3AVerify)
 &nbsp;
-[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/craftyphotons/indiauth_discovery?style=for-the-badge)](https://codeclimate.com/github/craftyphotons/indiauth_discovery)
+[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/craftyphotons/indieauth_discovery?style=for-the-badge)](https://codeclimate.com/github/craftyphotons/indieauth_discovery)
 &nbsp;
-[![Coveralls github branch](https://img.shields.io/coveralls/github/craftyphotons/indiauth_discovery/main?style=for-the-badge)](https://coveralls.io/github/craftyphotons/indiauth_discovery)
+[![Coveralls github branch](https://img.shields.io/coveralls/github/craftyphotons/indieauth_discovery/main?style=for-the-badge)](https://coveralls.io/github/craftyphotons/indieauth_discovery)
 
 Profile and client discovery for [Ruby](https://www.ruby-lang.org/en)-based [IndieAuth](https://indieauth.spec.indieweb.org) clients and providers.
 
