@@ -57,7 +57,7 @@ module IndieAuthDiscovery
 
     # @see https://indieauth.spec.indieweb.org/#url-canonicalization
     def verify_url(uri)
-      if (uri.is_a?(URI::HTTPS) || uri.is_a?(URI::HTTP)) && (last_response = check_url?(uri))
+      if http_uri?(uri) && (last_response = check_url?(uri))
         # Use the URL as-is if its already HTTP(S) and is available
         [uri.to_s, last_response]
       elsif (last_response = check_url?(URI.parse("https://#{uri}")))
@@ -70,6 +70,10 @@ module IndieAuthDiscovery
         # The URL is considered invalid if none of the above work
         raise_invalid_url_error(uri)
       end
+    end
+
+    def http_uri?(uri)
+      uri.is_a?(URI::HTTPS) || uri.is_a?(URI::HTTP)
     end
 
     def check_url?(uri)
