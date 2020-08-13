@@ -22,47 +22,15 @@ module IndieAuthDiscovery
       url
     end
 
-    # Canonicalize and verify the URL.
+    # Canonicalizes and verifies the URL.
     #
-    # https://indieauth.spec.indieweb.org/#user-profile-url
-    def canonicalize # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
-      # Normalize the URI (i.e. downcase the hostname)
-      uri = URI.parse(@original_url).normalize
-
-      # https://indieauth.spec.indieweb.org/#url-canonicalization
-      canonical =
-        if (uri.is_a?(URI::HTTPS) || uri.is_a?(URI::HTTP)) && (last_response = check_url?(uri))
-          # Use the URL as-is if its already HTTP(S) and is available
-          last_success_response = last_response
-          uri.to_s
-        elsif (last_response = check_url?(URI.parse("https://#{uri}")))
-          # If no scheme was given (e.g. example.com), try HTTPS
-          last_success_response = last_response
-          "https://#{uri}"
-        elsif (last_response = check_url?(URI.parse("http://#{uri}")))
-          # Try HTTP if HTTPS is not available
-          last_success_response = last_response
-          "http://#{uri}"
-        else
-          # The URL is considered invalid if none of the above work
-          raise_invalid_url_error(uri)
-        end
-
-      # Ensure that the URI has a path
-      canonical = "#{canonical}/" if URI.parse(canonical).path == ''
-
-      # Follow redirects
-      if [301, 302].include?(last_success_response.status)
-        redirects = []
-        callback = ->(old_env, new_env) { redirects << new_env.url.to_s if old_env.status == 301 }
-        redirector = Faraday.new(url: canonical) do |faraday|
-          faraday.use(FaradayMiddleware::FollowRedirects, callback: callback)
-          faraday.adapter(Faraday.default_adapter)
-        end
-        redirector.head
-
-        canonical = redirects.last if redirects.any? && redirects.last != canonical
-      end
+    # @see https://indieauth.spec.indieweb.org/#user-profile-url
+    # @see https://indieauth.spec.indieweb.org/#client-identifier
+    def canonicalize
+      canonical = normalize_url(original_url)
+      canonical, verify_response = verify_url(canonical)
+      canonical = ensure_path(canonical)
+      canonical = follow_redirects(canonical, verify_response)
 
       @canonical_url = canonical
     rescue URI::InvalidURIError, *FARADAY_ERRORS
@@ -83,6 +51,27 @@ module IndieAuthDiscovery
 
     FARADAY_ERRORS = [Faraday::ConnectionFailed, Faraday::TimeoutError].freeze
 
+    def normalize_url(url)
+      URI.parse(url).normalize
+    end
+
+    # @see https://indieauth.spec.indieweb.org/#url-canonicalization
+    def verify_url(uri)
+      if (uri.is_a?(URI::HTTPS) || uri.is_a?(URI::HTTP)) && (last_response = check_url?(uri))
+        # Use the URL as-is if its already HTTP(S) and is available
+        [uri.to_s, last_response]
+      elsif (last_response = check_url?(URI.parse("https://#{uri}")))
+        # If no scheme was given (e.g. example.com), try HTTPS
+        ["https://#{uri}", last_response]
+      elsif (last_response = check_url?(URI.parse("http://#{uri}")))
+        # Try HTTP if HTTPS is not available
+        ["http://#{uri}", last_response]
+      else
+        # The URL is considered invalid if none of the above work
+        raise_invalid_url_error(uri)
+      end
+    end
+
     def check_url?(uri)
       response = Faraday.head(uri)
       return false unless response.status < 400
@@ -90,6 +79,34 @@ module IndieAuthDiscovery
       response
     rescue *FARADAY_ERRORS
       nil
+    end
+
+    def ensure_path(uri)
+      return uri unless URI.parse(uri).path == ''
+
+      "#{uri}/"
+    end
+
+    # @see https://indieauth.spec.indieweb.org/#redirect-examples
+    def follow_redirects(uri, response)
+      return uri unless [301, 302].include?(response.status)
+
+      redirects = []
+      redirector(uri, redirects).head
+
+      uri = redirects.last if redirects.any? && redirects.last != uri
+      uri
+    end
+
+    def redirector(uri, redirects)
+      @redirector ||=
+        begin
+          callback = ->(old_env, new_env) { redirects << new_env.url.to_s if old_env.status == 301 }
+          Faraday.new(url: uri) do |faraday|
+            faraday.use(FaradayMiddleware::FollowRedirects, callback: callback)
+            faraday.adapter(Faraday.default_adapter)
+          end
+        end
     end
 
     def raise_invalid_url_error(url)
