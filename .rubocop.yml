@@ -1,0 +1,22 @@
+#inherit_from: .rubocop_todo.yml
+
+require:
+  - rubocop-performance
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - vendor/**/*
+  TargetRubyVersion: 2.5
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*.rb
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/FilePath:
+  CustomTransform:
+    IndieAuthDiscovery: indieauth_discovery
