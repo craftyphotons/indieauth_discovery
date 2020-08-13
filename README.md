@@ -5,6 +5,8 @@
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/craftyphotons/indieauth_discovery?style=for-the-badge)](https://codeclimate.com/github/craftyphotons/indieauth_discovery)
 &nbsp;
 [![Coveralls github branch](https://img.shields.io/coveralls/github/craftyphotons/indieauth_discovery/main?style=for-the-badge)](https://coveralls.io/github/craftyphotons/indieauth_discovery)
+&nbsp;
+[![Gem](https://img.shields.io/gem/v/indieauth_discovery?style=for-the-badge)](https://rubygems.org/gems/indieauth_discovery)
 
 Profile and client discovery for [Ruby](https://www.ruby-lang.org/en)-based [IndieAuth](https://indieauth.spec.indieweb.org) clients and providers.
 
