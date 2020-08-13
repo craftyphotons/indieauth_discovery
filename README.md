@@ -10,9 +10,12 @@ Profile and client discovery for [Ruby](https://www.ruby-lang.org/en)-based [Ind
 
 ## Features
 
-- [x] [User profile URL](https://indieauth.spec.indieweb.org/#user-profile-url) and [client identifier](https://indieauth.spec.indieweb.org/#client-identifier) validation and [canonicalization](https://indieauth.spec.indieweb.org/#url-canonicalization)
+- [x] [User profile URL](https://indieauth.spec.indieweb.org/#user-profile-url) and [client identifier](https://indieauth.spec.indieweb.org/#client-identifier) validation and [canonicalization](https://indieauth.spec.indieweb.org/#url-canonicalization) with 
 - [x] Handling of [permanant and temporary redirects](https://indieauth.spec.indieweb.org/#redirect-examples)
-- [x] [Authorization, token, and MicroPub endpoint discovery](https://indieauth.spec.indieweb.org/#discovery-by-clients)
+- [x] [Authorization, token, and MicroPub endpoint discovery](https://indieauth.spec.indieweb.org/#discovery-by-clients) from user profiles
+
+## Roadmap
+
 - [ ] [Client information discovery](https://indieauth.spec.indieweb.org/#client-information-discovery) from [`h-app` and `h-xapp`](https://indieweb.org/h-x-app)
 - [ ] [Redirect URI verification](https://indieauth.spec.indieweb.org/#redirect-url)
 
