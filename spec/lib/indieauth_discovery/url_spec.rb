@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'indieauth_discovery/url'
+
 RSpec.describe IndieAuthDiscovery::URL do
   subject(:url) { described_class }
 
