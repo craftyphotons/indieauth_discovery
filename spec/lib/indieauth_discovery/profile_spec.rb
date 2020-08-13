@@ -53,6 +53,10 @@ RSpec.describe IndieAuthDiscovery::Profile do
     it 'discovers the token endpoint' do
       expect(discovery.token_endpoint).to eq('https://example.org/token')
     end
+
+    it 'discovers the Micropub endpoint' do
+      expect(discovery.micropub_endpoint).to eq('https://example.org/micropub')
+    end
   end
 
   context 'with both valid links in the header and valid links on the page' do
@@ -66,7 +70,8 @@ RSpec.describe IndieAuthDiscovery::Profile do
           'Content-Type': 'text/html',
           'Link': [
             '<https://example.org/auth-from-header>; rel="authorization_endpoint"',
-            '<https://example.org/token-from-header>; rel="token_endpoint"'
+            '<https://example.org/token-from-header>; rel="token_endpoint"',
+            '<https://example.org/micropub-from-header>; rel="micropub"'
           ]
         }
       )
@@ -79,6 +84,10 @@ RSpec.describe IndieAuthDiscovery::Profile do
 
     it 'discovers the token endpoint from the header' do
       expect(discovery.token_endpoint).to eq('https://example.org/token-from-header')
+    end
+
+    it 'discovers the Micropub endpoint from the header' do
+      expect(discovery.micropub_endpoint).to eq('https://example.org/micropub-from-header')
     end
   end
 end

@@ -13,7 +13,7 @@ module IndieAuthDiscovery
   #
   # @see https://indieauth.spec.indieweb.org/#discovery-by-clients
   class Profile
-    attr_reader :profile_url, :authorization_endpoint, :token_endpoint, :response
+    attr_reader :profile_url, :authorization_endpoint, :micropub_endpoint, :token_endpoint, :response
 
     def initialize(default_scheme: :https)
       @default_scheme = default_scheme
@@ -36,6 +36,7 @@ module IndieAuthDiscovery
     def discover
       @authorization_endpoint = first_link('authorization_endpoint')
       @token_endpoint = first_link('token_endpoint')
+      @micropub_endpoint = first_link('micropub')
     end
 
     def parse_link_headers(response)
