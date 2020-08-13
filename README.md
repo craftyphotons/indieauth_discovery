@@ -10,11 +10,11 @@ Profile and client discovery for [Ruby](https://www.ruby-lang.org/en)-based [Ind
 
 ## Features
 
-* [User profile URL](https://indieauth.spec.indieweb.org/#user-profile-url) and [client identifier](https://indieauth.spec.indieweb.org/#client-identifier) validation and [canonicalization](https://indieauth.spec.indieweb.org/#url-canonicalization)
-* Handling of [permanant and temporary redirects](https://indieauth.spec.indieweb.org/#redirect-examples)
-* [Authorization, token, and MicroPub endpoint discovery](https://indieauth.spec.indieweb.org/#discovery-by-clients)
-* [Client information discovery](https://indieauth.spec.indieweb.org/#client-information-discovery) from [`h-app` and `h-xapp`](https://indieweb.org/h-x-app)
-* [Redirect URI verification](https://indieauth.spec.indieweb.org/#redirect-url)
+- [x] [User profile URL](https://indieauth.spec.indieweb.org/#user-profile-url) and [client identifier](https://indieauth.spec.indieweb.org/#client-identifier) validation and [canonicalization](https://indieauth.spec.indieweb.org/#url-canonicalization)
+- [x] Handling of [permanant and temporary redirects](https://indieauth.spec.indieweb.org/#redirect-examples)
+- [x] [Authorization, token, and MicroPub endpoint discovery](https://indieauth.spec.indieweb.org/#discovery-by-clients)
+- [ ] [Client information discovery](https://indieauth.spec.indieweb.org/#client-information-discovery) from [`h-app` and `h-xapp`](https://indieweb.org/h-x-app)
+[ ] [Redirect URI verification](https://indieauth.spec.indieweb.org/#redirect-url)
 
 ## Installation
 
@@ -34,7 +34,33 @@ Or install it yourself as:
 
 ## Usage
 
-_TODO: Write usage instructions here_
+### URL verification and canonicalization
+
+`indieauth_discovery` can canonicalize and verify URLs indepedently of information discovery via the `IndieAuthDiscovery::URL` class:
+
+``` ruby
+require 'indieauth_discovery/url'
+
+url = IndieAuthDiscovery::URL.new('example.com')
+url.canonicalize
+
+# or
+
+url = IndieAuthDiscovery::URL.canonicalize('example.com')
+
+url.original_url # example.com
+url.canonical_url # http://example.com/
+```
+
+The `#canonicalize` method performs the following steps:
+
+1. Normalizes the URL (downcases the hostname)
+2. Verifies the URL if already `http` or `https` by performing an HTTP `HEAD` request
+3. If the URL is generic without a scheme (i.e. `example.com`), attempts to verify the URL with an HTTP `HEAD` request to both `https://<url>` and `http://<url>`, prioritizing HTTPS
+4. Ensures the URL has a path by appending `/` to it if the path component is empty
+5. Follows up to three redirects, and uses the last permanent (301) redirect as the canonical URL
+
+If none of the steps above result in a verified URL, an `IndieAuthDiscovery::InvalidURLError` will be raised.
 
 ## Development
 
