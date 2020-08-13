@@ -5,9 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.1.0]
+
+Initial release! :tada:
+
 ### Added
 
 * User profile URL and client identifier validation and canonicalization
 * Authorization, token, and MicroPub endpoint discovery from user profiles
 
-[Unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/8f4a9c8118d1a2750ca6a5302f62b49399c39dbf...HEAD
+[Unreleased]: https://github.com/craftyphotons/indieauth_discovery/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/craftyphotons/indieauth_discovery/releases/tag/v0.1.0
