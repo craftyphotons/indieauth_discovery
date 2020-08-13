@@ -5,7 +5,7 @@ require 'spec_helper'
 require 'indieauth_discovery/profile'
 
 RSpec.describe IndieAuthDiscovery::Profile do
-  subject(:discovery) { described_class.new }
+  subject(:profile) { described_class.discover(profile_url) }
 
   let(:profile_body) { File.read(File.expand_path('../../support/fixtures/profile.html', __dir__)) }
 
@@ -24,15 +24,14 @@ RSpec.describe IndieAuthDiscovery::Profile do
           ]
         }
       )
-      discovery.call(profile_url)
     end
 
     it 'discovers the authorization endpoint' do
-      expect(discovery.authorization_endpoint).to eq('https://example.org/auth')
+      expect(profile.authorization_endpoint).to eq('https://example.org/auth')
     end
 
     it 'discovers the token endpoint' do
-      expect(discovery.token_endpoint).to eq('https://example.org/token')
+      expect(profile.token_endpoint).to eq('https://example.org/token')
     end
   end
 
@@ -43,19 +42,18 @@ RSpec.describe IndieAuthDiscovery::Profile do
       stub_request(:head, profile_url).to_return(status: 204)
       stub_request(:get, profile_url)
         .to_return(status: 200, body: profile_body, headers: { 'Content-Type': 'text/html' })
-      discovery.call(profile_url)
     end
 
     it 'discovers the authorization endpoint' do
-      expect(discovery.authorization_endpoint).to eq('https://example.org/auth')
+      expect(profile.authorization_endpoint).to eq('https://example.org/auth')
     end
 
     it 'discovers the token endpoint' do
-      expect(discovery.token_endpoint).to eq('https://example.org/token')
+      expect(profile.token_endpoint).to eq('https://example.org/token')
     end
 
     it 'discovers the Micropub endpoint' do
-      expect(discovery.micropub_endpoint).to eq('https://example.org/micropub')
+      expect(profile.micropub_endpoint).to eq('https://example.org/micropub')
     end
   end
 
@@ -75,19 +73,18 @@ RSpec.describe IndieAuthDiscovery::Profile do
           ]
         }
       )
-      discovery.call(profile_url)
     end
 
     it 'discovers the authorization endpoint from the header' do
-      expect(discovery.authorization_endpoint).to eq('https://example.org/auth-from-header')
+      expect(profile.authorization_endpoint).to eq('https://example.org/auth-from-header')
     end
 
     it 'discovers the token endpoint from the header' do
-      expect(discovery.token_endpoint).to eq('https://example.org/token-from-header')
+      expect(profile.token_endpoint).to eq('https://example.org/token-from-header')
     end
 
     it 'discovers the Micropub endpoint from the header' do
-      expect(discovery.micropub_endpoint).to eq('https://example.org/micropub-from-header')
+      expect(profile.micropub_endpoint).to eq('https://example.org/micropub-from-header')
     end
   end
 end

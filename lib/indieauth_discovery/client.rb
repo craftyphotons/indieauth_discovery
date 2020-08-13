@@ -9,51 +9,39 @@ require_relative './errors'
 require_relative './url'
 
 module IndieAuthDiscovery
-  # User profile information discovery according to the IndieAuth spec.
+  # Client information discovery according to the IndieAuth spec.
   #
-  # @see https://indieauth.spec.indieweb.org/#discovery-by-clients
+  # @see https://indieauth.spec.indieweb.org/#client-information-discovery
   class Profile
-    attr_reader :url, :authorization_endpoint, :micropub_endpoint, :token_endpoint, :response
+    attr_reader :profile_url, :authorization_endpoint, :token_endpoint, :response
 
-    def initialize(url)
-      @url = URL.new(url)
+    def initialize(default_scheme: :https)
+      @default_scheme = default_scheme
     end
 
-    # Returns a new Profile after canonicalizing and verifying the URL and discovering endpoints.
-    def self.discover(url)
-      new(url).discover
-    end
-
-    # Returns the Profile after canonicalizing and verifying the URL and discovering endpoints.
-    def discover
-      canonicalize_url
-      fetch_profile
-      find_endpoints
-      self
+    def call(url)
+      @profile_url = URL.canonicalize(url)
+      retrieve
+      discover
     end
 
     private
 
-    def canonicalize_url
-      url.canonicalize
-    end
-
-    def fetch_profile
-      @response ||= get_follow_redirects(url.to_s)
+    def retrieve
+      @response ||= get_follow_redirects(profile_url)
       @link_headers = parse_link_headers(response)
       @profile_document = parse_html_document(response)
     end
 
-    def find_endpoints
+    def discover
       @authorization_endpoint = first_link('authorization_endpoint')
       @token_endpoint = first_link('token_endpoint')
-      @micropub_endpoint = first_link('micropub')
     end
 
     def parse_link_headers(response)
       return {} unless response.headers['link']
 
-      LinkHeaderParser.parse(response.headers['link'], base: url.to_s).group_by_relation_type
+      LinkHeaderParser.parse(response.headers['link'], base: profile_url).group_by_relation_type
     end
 
     def parse_html_document(response)

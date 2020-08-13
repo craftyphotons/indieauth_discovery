@@ -14,7 +14,7 @@ Profile and client discovery for [Ruby](https://www.ruby-lang.org/en)-based [Ind
 - [x] Handling of [permanant and temporary redirects](https://indieauth.spec.indieweb.org/#redirect-examples)
 - [x] [Authorization, token, and MicroPub endpoint discovery](https://indieauth.spec.indieweb.org/#discovery-by-clients)
 - [ ] [Client information discovery](https://indieauth.spec.indieweb.org/#client-information-discovery) from [`h-app` and `h-xapp`](https://indieweb.org/h-x-app)
-[ ] [Redirect URI verification](https://indieauth.spec.indieweb.org/#redirect-url)
+- [ ] [Redirect URI verification](https://indieauth.spec.indieweb.org/#redirect-url)
 
 ## Installation
 
@@ -61,6 +61,26 @@ The `#canonicalize` method performs the following steps:
 5. Follows up to three redirects, and uses the last permanent (301) redirect as the canonical URL
 
 If none of the steps above result in a verified URL, an `IndieAuthDiscovery::InvalidURLError` will be raised.
+
+### User profile discovery
+
+User profile information can be discovered with `indieauth_discovery` via the `IndieAuthDiscovery::Profile` class:
+
+``` ruby
+require 'indieauth_discovery/profile'
+
+profile = IndieAuthDiscovery::Profile.new('example.com')
+profile.discover
+
+# or
+
+profile = IndieAuthDiscovery::Profile.discover('example.com')
+
+profile.url # http://example.com/
+profile.authorization_endpoint # http://example.com/auth
+profile.token_endpoint # http://example.com/token
+profile.micropub_endpoint # http://example.com/micropub
+```
 
 ## Development
 
