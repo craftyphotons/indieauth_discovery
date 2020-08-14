@@ -9,11 +9,12 @@ require_relative './errors'
 module IndieAuthDiscovery
   # Canonicalization for IndieAuth client and user profile URLs.
   class URL
-    attr_reader :original_url, :canonical_url
+    attr_reader :original_url, :canonical_url, :redirects
 
     def initialize(original_url)
       @original_url = original_url.to_s
       @canonical_url = original_url.to_s
+      @redirects = []
     end
 
     def self.canonicalize(original_url)
@@ -93,24 +94,29 @@ module IndieAuthDiscovery
 
     # @see https://indieauth.spec.indieweb.org/#redirect-examples
     def follow_redirects(uri, response)
-      return uri unless [301, 302].include?(response.status)
+      return uri unless [300, 301, 302, 303, 304, 307, 308].include?(response.status)
 
-      redirects = []
-      redirector(uri, redirects).head
+      redirector(uri).head
+      redirects.each do |redirect|
+        status = redirect[:status]
+        break unless [301, 308].include?(status)
 
-      uri = redirects.last if redirects.any? && redirects.last != uri
+        uri = redirect[:url] if [301, 308].include?(status)
+      end
+
       uri
     end
 
-    def redirector(uri, redirects)
+    def redirector(uri)
       @redirector ||=
-        begin
-          callback = ->(old_env, new_env) { redirects << new_env.url.to_s if old_env.status == 301 }
-          Faraday.new(url: uri) do |faraday|
-            faraday.use(FaradayMiddleware::FollowRedirects, callback: callback)
-            faraday.adapter(Faraday.default_adapter)
-          end
+        Faraday.new(url: uri) do |faraday|
+          faraday.use(FaradayMiddleware::FollowRedirects, callback: method(:redirect_callback))
+          faraday.adapter(Faraday.default_adapter)
         end
+    end
+
+    def redirect_callback(old_env, new_env)
+      redirects << { url: new_env.url.to_s, status: old_env.status }
     end
 
     def raise_invalid_url_error(url)
