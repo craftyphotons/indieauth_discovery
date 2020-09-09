@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Fixes
+
+* Use the last permanent redirect before any temporary redirects when canonicalizing URLs [#3](https://github.com/craftyphotons/indieauth_discovery/issues/3).
+
 ## [0.1.0]
 
 Initial release! :tada:

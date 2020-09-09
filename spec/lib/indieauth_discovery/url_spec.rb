@@ -175,6 +175,36 @@ RSpec.describe IndieAuthDiscovery::URL do
       end
     end
 
+    # https://indieauth.spec.indieweb.org/#temporary-redirect-to-a-different-domain
+    context 'when the URL redirects temporarily and then permanently to a different domain' do
+      before do
+        stub_request(:head, 'http://username.example/')
+          .to_return(status: 301, headers: { 'Location' => 'https://example.com/username' })
+        stub_request(:head, 'https://username.example/')
+          .to_raise(Errno::ECONNREFUSED)
+        stub_request(:head, 'https://example.com/username')
+          .to_return(status: 302, headers: { 'Location' => 'https://example.com/~username' })
+        stub_request(:head, 'https://example.com/~username')
+          .and_return(status: 301, headers: { 'Location' => 'https://example.com/~username/' })
+        stub_request(:head, 'https://example.com/~username/')
+          .and_return(status: 204)
+
+        stub_request(:get, 'http://username.example/')
+          .to_return(status: 301, headers: { 'Location' => 'https://example.com/username' })
+        stub_request(:get, 'https://example.com/username')
+          .to_return(status: 302, headers: { 'Location' => 'https://example.com/~username' })
+        stub_request(:get, 'https://example.com/~username')
+          .to_return(status: 301, headers: { 'Location' => 'https://example.com/~username/' })
+        stub_request(:get, 'https://example.com/~username/')
+          .to_return(status: 200, body: profile_body, headers: { 'Content-Type': 'text/html' })
+      end
+
+      it 'uses the last permanent redirect URL before a temporary redirect' do
+        result = url.canonicalize('username.example')
+        expect(result.canonical_url).to eq('https://example.com/username')
+      end
+    end
+
     context 'with a non-HTTP(S) URL' do
       before do
         stub_request(:head, 'http://ftp//example.org/me/').to_raise(Faraday::ConnectionFailed)

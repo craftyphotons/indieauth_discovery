@@ -18,6 +18,8 @@ GEM
     bundler-audit (0.7.0.1)
       bundler (>= 1.2.0, < 3)
       thor (>= 0.18, < 2)
+    byebug (11.1.3)
+    coderay (1.1.3)
     coveralls (0.8.23)
       json (>= 1.8, < 3)
       simplecov (~> 0.16.1)
@@ -36,6 +38,7 @@ GEM
     json (2.3.1)
     link-header-parser (2.0.0)
       absolutely (~> 4.0)
+    method_source (1.0.0)
     mini_portile2 (2.4.0)
     multipart-post (2.1.1)
     nokogiri (1.10.10)
@@ -43,6 +46,9 @@ GEM
     parallel (1.19.2)
     parser (2.7.1.4)
       ast (~> 2.4.1)
+    pry (0.13.1)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
     public_suffix (4.0.5)
     rainbow (3.0.0)
     rake (13.0.1)
@@ -101,8 +107,10 @@ PLATFORMS
 
 DEPENDENCIES
   bundler-audit (~> 0.7)
+  byebug (~> 11.1)
   coveralls (~> 0.8)
   indieauth_discovery!
+  pry (~> 0.13)
   rake (~> 13.0)
   rspec (~> 3.9)
   rubocop (~> 0.89)
