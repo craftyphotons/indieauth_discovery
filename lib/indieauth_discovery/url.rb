@@ -52,6 +52,8 @@ module IndieAuthDiscovery
 
     FARADAY_ERRORS = [Faraday::ConnectionFailed, Faraday::TimeoutError].freeze
 
+    PERMANENT_REDIRECTS = [301, 308].freeze
+
     def normalize_url(url)
       URI.parse(url).normalize
     end
@@ -99,9 +101,9 @@ module IndieAuthDiscovery
       redirector(uri).head
       redirects.each do |redirect|
         status = redirect[:status]
-        break unless [301, 308].include?(status)
+        break unless PERMANENT_REDIRECTS.include?(status)
 
-        uri = redirect[:url] if [301, 308].include?(status)
+        uri = redirect[:url] if PERMANENT_REDIRECTS.include?(status)
       end
 
       uri
