@@ -66,9 +66,7 @@ RSpec.describe IndieAuthDiscovery::URL do
           expect(result.canonical_url).to eq('http://example.org/')
         end
       end
-    end
 
-    [Errno::ECONNREFUSED, Errno::ETIMEDOUT, Errno::EINVAL, Errno::ECONNRESET, EOFError, Timeout::Error].each do |e|
       context "with a generic URL when #{e} occurs when attempting both https and http for the URL" do
         before do
           stub_request(:head, 'https://example.org/').to_raise(e)
