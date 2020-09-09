@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    indieauth_discovery (0.1.0)
+    indieauth_discovery (0.1.1)
       faraday (~> 1.0)
       faraday_middleware (~> 1.0)
       link-header-parser (~> 2.0)
