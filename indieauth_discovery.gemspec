@@ -27,6 +27,6 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'faraday', '~> 1.0'
   spec.add_runtime_dependency 'faraday_middleware', '~> 1.0'
-  spec.add_runtime_dependency 'link-header-parser', '~> 2.0'
+  spec.add_runtime_dependency 'link-header-parser', '>= 2', '< 4'
   spec.add_runtime_dependency 'nokogiri', '~> 1.10'
 end
